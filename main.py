@@ -1,4 +1,3 @@
-from machine import Pin, I2C, ADC, UART
 # from ssd1306 import SSD1306_I2C
 # from pico_i2c_lcd import I2cLcd
 # from time import sleep
@@ -54,12 +53,29 @@ from machine import Pin, I2C, ADC, UART
 #         value = pot.read_u16()
 #         print(value)
 #         sleep(0.1)
-        
-        
-def main():
-    uart = UART(0, baudrate=9600, tx=Pin(0), rx=Pin(1))
 
-    while True:
-        if uart.any():
-            gps_read = uart.read().decode('utf-8')
-            print(gps_read)
+
+
+# create pot select [wildlife, police]
+# open/write to files logic
+# button press to write data to file
+# add lcd
+
+
+from machine import Pin, ADC, UART
+from lib import gps_parser 
+import time
+
+uart = UART(0, baudrate=9600, tx=Pin(0), rx=Pin(1)) # GPS Module
+button = Pin(14, Pin.IN, Pin.PULL_UP) # Log button
+pot = ADC(Pin(26)) # Potentiometer
+
+gps = gps_parser.GPSReader(uart)
+
+
+while True:
+    gps_data = gps.get_data()
+    
+    print(gps_data.has_fix, gps_data.latitude, gps_data.longitude)
+    
+    time.sleep(0.5)
